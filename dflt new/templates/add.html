@@ -101,7 +101,7 @@
                         </div>
 
                     </div>
-                </form>
+                
             </div>
 
             <!-- this is ball composition -->
@@ -140,6 +140,7 @@
                 </table>
             </div>
 <!--  this is the paste part -->
+        
             <div class = "form-elem">
                 <label for = "" class = "form-label">Paste TYPE</label>
                 <input name = "paste_type" type = "text" class = "form-control firstname" id = "" onkeyup="generateCV()" placeholder="e.g. DFLT">
@@ -199,7 +200,9 @@
                 <label for = "" class = "form-label">test_result</label>
                 <input name = "test_result" type = "file" class = "form-control image" id = "" accept = "image/*" onchange="previewImage()">
             </div>
+        
         </div>
+    
 
         
 
@@ -254,6 +257,59 @@
                 <input name = "test_result" type = "file" class = "form-control image" id = "" accept = "image/*" onchange="previewImage()">
             </div>
         </div>
+    </form>
+    <!-- this is the print part -->
+
+        <section id = "preview-sc" class = "print_area">
+            <div class = "container">
+                <div class = "preview-cnt">
+                    <div class = "preview-cnt-l bg-green text-black">
+                        <div class = "preview-blk">
+                            <div class = "preview-blk-title">
+                                <h3>about</h3>
+                            </div>
+                           
+                            <div class = "preview-item preview-item-name">
+                                <span class = "preview-item-val fw-6" id = "ballDsp"></span>
+                            </div>
+                            
+                            <div class = "preview-item preview-item-name">
+                                <span class = "preview-item-val fw-6" id = "pasteDsp"></span>
+                            </div>
+
+                            <div class = "preview-item preview-item-name">
+                                <span class = "preview-item-val fw-6" id = "reflowDsp"></span>
+                            </div>
+                            
+                        </div>
+
+
+                        
+                    </div>
+
+                    <div class = "preview-cnt-r bg-white">
+                        
+
+                        <div class = "preview-blk">
+                            <div class = "preview-blk-title">
+                                <h3>projects</h3>
+                            </div>
+                            <div class = "projects-items preview-blk-list" id = "projects_dsp"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class = "print-btn-sc">
+            <div class = "container">
+                <button type = "button" class = "print-btn btn btn-primary" onclick="printCV()">Print CV</button>
+            </div>
+        </section>
+
+
+
+        
 
         
 
