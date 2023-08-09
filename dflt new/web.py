@@ -55,31 +55,13 @@ def home():
 
 
 @app.route('/add', methods=['GET', 'POST'])
-def save_to_csv(data, path):
-    # Determine if we need to write the header
-    write_header = not os.path.exists(path)
-    
-    # Flatten the data dictionary
-    flat_data = {}
-    for key, value in data.items():
-        if isinstance(value, dict):
-            for subkey, subvalue in value.items():
-                flat_data[subkey] = subvalue
-        else:
-            flat_data[key] = value
-
-    with open(path, 'a', newline='') as csvfile:
-        fieldnames = list(flat_data.keys())
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        if write_header:
-            writer.writeheader()
-
-        writer.writerow(flat_data)
 
 def add_date():
     if request.method == 'POST':
         data = request.json
+    
+
+    
         print("Received data:")
         print(data)
 
@@ -89,11 +71,9 @@ def add_date():
         # 1. Save to CSV
         csv_filename = 'all_data.csv'
         csv_path = os.path.join(directory, csv_filename)
-       
+    
         save_to_csv(data, csv_path)
-
-       
-        # 2. Save to .txt named by pastetype
+            # 2. Save to .txt named by pastetype
         txt_filename = f"{data['pastetype']}.txt"
         txt_path = os.path.join(directory, txt_filename)
 
@@ -101,6 +81,10 @@ def add_date():
             txtfile.write(json.dumps(data, indent=4))
 
         return jsonify(message="Data added successfully!")
+    
+
+       
+      
     
     return render_template("add.html")
 
