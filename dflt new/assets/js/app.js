@@ -262,6 +262,23 @@ function previewImage(){
     }
 }
 
+
+function sendNameToBackend() {
+    
+    let userData = getUserInputs();
+    fetch('/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ Data: userData })
+    }).then(response => response.json())
+      .then(data => {
+        console.log("this is the data")
+        console.log(userData);  // You can handle the response from the backend here
+      });
+}
+
 // print CV
 function printCV(){
     window.print();
