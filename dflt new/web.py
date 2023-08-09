@@ -8,6 +8,7 @@ import requests
 from flask import Flask, request, render_template, jsonify
 import os
 import csv
+import base64
 
 
 from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilder
@@ -48,10 +49,6 @@ def home():
     return render_template("index.html")
 
 
- 
-
-
-
 
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -59,9 +56,7 @@ def home():
 def add_date():
     if request.method == 'POST':
         data = request.json
-    
 
-    
         print("Received data:")
         print(data)
 
@@ -73,22 +68,12 @@ def add_date():
         csv_path = os.path.join(directory, csv_filename)
     
         save_to_csv(data, csv_path)
-            # 2. Save to .txt named by pastetype
-        txt_filename = f"{data['pastetype']}.txt"
-        txt_path = os.path.join(directory, txt_filename)
-
-        with open(txt_path, 'w') as txtfile:
-            txtfile.write(json.dumps(data, indent=4))
+          
 
         return jsonify(message="Data added successfully!")
     
 
-       
-      
-    
     return render_template("add.html")
-
-
 
 
  
