@@ -32,7 +32,8 @@ def add_date():
 @app.route('/search', methods=['GET'])
 def search_data():
     return render_template("search_data.html")
-    
+
+
 
     
 

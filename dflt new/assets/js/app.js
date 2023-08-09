@@ -23,12 +23,15 @@ let boardtypeElem = mainForm.board_type,
     pastesizeElem= mainForm.paste_size,
     reflowtempElem= mainForm.reflow_temp,
     reflowtimeElem= mainForm.reflow_time;
+    display_table= mainForm.displayTable;
 
-
+    
 
 // display elements
 
 let nameDsp = document.getElementById('fullname_dsp');
+let board_list={};
+let paste_list={};
     
 
 // first value is for the attributes and second one passes the nodelists
@@ -51,8 +54,12 @@ const fetchValues = (attrs, ...nodeLists) => {
     return tempDataArr;
 }
 
+
+
+
 const getUserInputs = () => {
-    
+      
+        
        
         boardtypeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType.TEXT, 'board_type'));
         ballsizeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'ball_size'));
@@ -60,15 +67,20 @@ const getUserInputs = () => {
         pastesizeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'paste_size'));
         reflowtempElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'reflow_temp'));
         reflowtimeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'reflow_time'));
+        console.log(board_list);
+        console.log(paste_list);
     
 
         return {
-           board_type: boardtypeElem.value
+        board_type: boardtypeElem.value
         , ballsize: ballsizeElem.value
         ,pastetype:pastetypeElem.value,
         pastesize:pastesizeElem.value,
         reflow_temp:reflowtempElem.value,
-        reflow_time:reflowtimeElem.value
+        reflow_time:reflowtimeElem.value,
+        board_list: board_list,
+        paste_list: paste_list
+
 
         }
 
@@ -156,6 +168,24 @@ function showTable() {
     for(let i=0; i<compositionRows.length; i++) {
         let elementName = compositionRows[i].getElementsByClassName('elementName')[0].value;
         let percentage = compositionRows[i].getElementsByClassName('percentage')[0].value;
+        board_list[elementName]=percentage;
+
+        let row = displayTable.insertRow();
+        let cell1 = row.insertCell();
+        let cell2 = row.insertCell();
+        cell1.innerHTML = elementName;
+        cell2.innerHTML = percentage;
+    }
+}
+
+function showTable2() {
+    let compositionRows = document.getElementsByClassName('compositionRow');
+    let displayTable = document.getElementById('displayTable2');
+
+    for(let i=0; i<compositionRows.length; i++) {
+        let elementName = compositionRows[i].getElementsByClassName('elementName')[0].value;
+        let percentage = compositionRows[i].getElementsByClassName('percentage')[0].value;
+        paste_list[elementName]= percentage;
 
         let row = displayTable.insertRow();
         let cell1 = row.insertCell();
@@ -189,11 +219,26 @@ const showListData = (listData, listContainer) => {
     })
 }
 
+function objectToString(obj) {
+    let result = [];
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            result.push(key + ": " + obj[key]);
+        }
+    }
+    return result.join(', ');
+}
+
+
+
+
 const displayCV = (userData) => {
    
     ballDsp.innerHTML ="the board type is: "+ userData.board_type  + " the ballsize is " + userData.ballsize;
-    pasteDsp.innerHTML ="the paste type is: "+ userData.paste_type  + " the pastesize is " + userData.paste_size;
+    pasteDsp.innerHTML ="the paste type is: "+ userData.pastetype  + " the pastesize is " + userData.pastesize;
     reflowDsp.innerHTML=" the reflow temp is " + userData.reflow_temp + " the reflow timw is "+ userData.reflow_time;
+    projects_dsp.innerHTML = "board composition is " + objectToString(userData.board_list) + " paste composition is " + objectToString(userData.paste_list);
+    
    
     
     // showListData(userData.achievements, achievementsDsp);
