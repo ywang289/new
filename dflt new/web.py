@@ -27,7 +27,16 @@ def save_to_csv(data, path):
     write_header = not os.path.exists(path)
     
     # Flatten the data dictionary
-    flat_data = {}
+    values = list(data.values())
+    print(values)
+    sample_name = str(values[0]['board_type']) + str(values[0]['ballsize'])+ str(values[0]['pastetype'])+ str(values[0]['pastesize'])+ str(values[0]['reflow_temp'])
+
+    # [{'board_type': 'w', 'ballsize': 'w', 'pastetype': 'wer', 'pastesize': 'wer', 'reflow_temp': '110', 'reflow_time': '20', 
+    #   'board_list': {'Boron': '12', 'Carbon': '13', 'Aluminium': '15', 'Beryllium': '56'}, 
+    #   'paste_list': {'Boron': '12', 'Carbon': '13', 'Aluminium': '15', 'Beryllium': '56'}}]
+
+    # Flatten the data dictionary
+    flat_data = {"sample_name": sample_name}
     for key, value in data.items():
         if isinstance(value, dict):
             for subkey, subvalue in value.items():
@@ -82,7 +91,21 @@ def search_data():
     return render_template("search_data.html")
 
 
+@app.route('/save_image', methods=['POST'])
+def save_image():
+    data = request.json
+    base64_image = data['image'].split(',')[1]  # remove the "data:image/png;base64," part
+    filename = data['filename']  # 获取文件名
 
+    image_data = base64.b64decode(base64_image)
+
+    directory = r'C:\Users\ywang\Desktop\DFLT_summary\sample inforamtion'
+    path = os.path.join(directory, filename)
+    
+    with open(path, 'wb') as f:
+        f.write(image_data)
+
+    return jsonify(status="success")
     
 
 if __name__=='__main__':

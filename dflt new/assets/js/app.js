@@ -283,21 +283,39 @@ function saveCVAsImage() {
     let element = document.getElementById('preview-sc');
 
     html2canvas(element).then(function(canvas) {
-        // 创建一个图像标签来显示canvas内容
-        let img = document.createElement('img');
-        img.src = canvas.toDataURL();
+        let userData = getUserInputs();
+        
+        // 根据 userData 生成文件名
+        let filename = userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
+                     + userData['pastesize'] + userData['reflow_temp'] + '.png';
 
-        // 创建一个下载链接来下载canvas内容为图像
-        let link = document.createElement('a');
-        link.href = canvas.toDataURL();
-        link.download = 'cv.png';
-        link.click();
+        // 获取canvas的Base64编码
+        let base64Image = canvas.toDataURL();
+
+        // 将图像发送到服务器
+        sendImageToServer(base64Image, filename);
     });
 }
 
+function sendImageToServer(base64Image, filename) {
+    fetch('/save_image', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            image: base64Image,
+            filename: filename  // 将文件名也发送到服务器
+        })
+    });
+}
+
+
+
+
 // 在printCV()函数中调用saveCVAsImage
 function printCV() {
-    saveCVAsImage();
+    
     window.print();
 }
 
