@@ -310,61 +310,37 @@ function sendImageToServer(base64Image, filename) {
 }
 
 async function handleZipFile() {
-    const uploadStatus = document.getElementById('uploadStatus');
-    uploadStatus.textContent = "Uploading..";
-
     const zipFileInput = document.getElementById('zipResult');
     const typeSection = document.getElementById('typeSection2');
     const testResultType = typeSection.options[typeSection.selectedIndex].value;
-    
+    const uploadStatus = document.getElementById('uploadStatus');
 
-    let zip = new JSZip();
-    let reader = new FileReader();
+    if (zipFileInput.files.length === 0) {
+        console.error('No files selected');
+        return;
+    }
 
-    reader.onload = async function(event) {
-        const formData = new FormData();
-        await zip.loadAsync(event.target.result);
+    const file = zipFileInput.files[0];
+    const formData = new FormData();
+    formData.append('zipfile', file, file.name)
+    formData.append('testResultType', testResultType);
 
-        const files = Object.keys(zip.files);
-        let fileCount = 0;
-        for (let i = 0; i < files.length; i++) {
-            const fileName = files[i];
-            const newFileName = testResultType + "_" + (i+1) + "_" + fileName;
+    uploadStatus.textContent = "Uploading...";
 
-            // Check if the current item is a file
-            if (!zip.files[fileName].dir) {
-                const content = await zip.file(fileName).async("arraybuffer");
-                const blob = new Blob([content], { type: "application/octet-stream" });
+    try {
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData,
+        });
 
-                // Add the file to the FormData object
-                formData.append("files", blob, newFileName);
-                fileCount++;
-            }
+        if (response.ok) {
+            uploadStatus.textContent = "Success";
+        } else {
+            uploadStatus.textContent = `Failed to upload files: ${response.statusText}`;
         }
-
-        if (fileCount > 0) {
-            // Update the status to "Uploading..."
-            uploadStatus.textContent = "Uploading...";
-            formData.append("testResultType", testResultType);
-
-            // Send the FormData to the backend
-            const response = await fetch("/upload", {
-                method: "POST",
-                body: formData,
-                
-            });
-
-            if (response.ok) {
-                // Update the status to "Success"
-                uploadStatus.textContent = "Success";
-            } else {
-                // Update the status to the error message
-                uploadStatus.textContent = "Failed to upload files: " + response.statusText;
-            }
-        }
-    };
-
-    reader.readAsArrayBuffer(zipFileInput.files[0]);
+    } catch (error) {
+        uploadStatus.textContent = `Failed to upload files: ${error}`;
+    }
 }
 
 

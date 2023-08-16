@@ -9,6 +9,7 @@ from flask import Flask, request, render_template, jsonify
 import os
 import csv
 import base64
+import zipfile
 
 
 from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilder
@@ -91,40 +92,39 @@ def add_date():
 @app.route('/search', methods=['GET'])
 def search_data():
     return render_template("search_data.html")
+from flask import Flask, request, jsonify
+import os
+
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    try:
-        if 'files' not in request.files:
-            return jsonify(status="error", message="No file part")
+    if 'zipfile' not in request.files:
+        return "No file part", 400
 
-        test_result_type = request.form.get("testResultType")
-        print(f"Test Result Type: {test_result_type}")
-        uploaded_files = request.files.getlist('files')
+    file = request.files['zipfile']
+    if file.filename == '':
+        return "No selected file", 400
 
-        # Create a directory based on test_result_type
-        # directory = r'C:\Users\ywang\Desktop\DFLT_summary\{}'.format(test_result_type)
-        directory = r'C:\Users\ywang\Desktop\DFLT_summary'
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+    test_result_type = request.form.get("testResultType")
 
-        for file in uploaded_files:
-            if file.filename == '':
-                return jsonify(status="error", message="No selected file")
+    # Create directory if it doesn't exist
+    directory = r'C:\Users\ywang\Desktop\DFLT_summary\{}'.format(test_result_type)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
-            # Save the uploaded file in the created directory
-            file_path = os.path.join(directory, file.filename)
-            try:
-                file.save(file_path)
-                print(f"Saved file: {file.filename}")
-            except Exception as e:
-                print(f"Error saving file: {str(e)}")
+    # Save the uploaded zip file to the server
+    zip_path = os.path.join(directory, file.filename)
+    file.save(zip_path)
+
+    # Unzip the file into the specified directory
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(directory)
+
+    return "File uploaded and extracted successfully"
 
 
-        return jsonify(status="success")
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify(status="error", message=str(e))
+
 
 
 @app.route('/save_image', methods=['POST'])
