@@ -28,6 +28,9 @@ html{
 body{
     font-size: 1.6rem;
     font-family: var(--font-poppins);
+    height:auto
+ 
+    
 }
 
 button{
@@ -42,7 +45,7 @@ button{
 }
 
 img{
-    width: 100%;
+    width: 150%;
     display: block;
 }
 
