@@ -59,8 +59,7 @@ const fetchValues = (attrs, ...nodeLists) => {
 
 const getUserInputs = () => {
       
-        
-       
+
         boardtypeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType.TEXT, 'board_type'));
         ballsizeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'ball_size'));
         pastetypeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType.TEXT, 'paste_type'));
@@ -310,6 +309,77 @@ function sendImageToServer(base64Image, filename) {
     });
 }
 
+async function handleZipFile() {
+    const uploadStatus = document.getElementById('uploadStatus');
+    uploadStatus.textContent = "Uploading..";
+
+    const zipFileInput = document.getElementById('zipResult');
+    const typeSection = document.getElementById('typeSection2');
+    const testResultType = typeSection.options[typeSection.selectedIndex].value;
+    
+
+    let zip = new JSZip();
+    let reader = new FileReader();
+
+    reader.onload = async function(event) {
+        const formData = new FormData();
+        await zip.loadAsync(event.target.result);
+
+        const files = Object.keys(zip.files);
+        let fileCount = 0;
+        for (let i = 0; i < files.length; i++) {
+            const fileName = files[i];
+            const newFileName = testResultType + "_" + (i+1) + "_" + fileName;
+
+            // Check if the current item is a file
+            if (!zip.files[fileName].dir) {
+                const content = await zip.file(fileName).async("arraybuffer");
+                const blob = new Blob([content], { type: "application/octet-stream" });
+
+                // Add the file to the FormData object
+                formData.append("files", blob, newFileName);
+                fileCount++;
+            }
+        }
+
+        if (fileCount > 0) {
+            // Update the status to "Uploading..."
+            uploadStatus.textContent = "Uploading...";
+            formData.append("testResultType", testResultType);
+
+            // Send the FormData to the backend
+            const response = await fetch("/upload", {
+                method: "POST",
+                body: formData,
+                
+            });
+
+            if (response.ok) {
+                // Update the status to "Success"
+                uploadStatus.textContent = "Success";
+            } else {
+                // Update the status to the error message
+                uploadStatus.textContent = "Failed to upload files: " + response.statusText;
+            }
+        }
+    };
+
+    reader.readAsArrayBuffer(zipFileInput.files[0]);
+}
+
+
+
+function saveFile(file, fileName) {
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style.display = "none";
+    const blob = new Blob([file], {type: "image/*"});
+    const url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
 
 
 
