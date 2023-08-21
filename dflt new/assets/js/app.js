@@ -17,6 +17,7 @@ const validType = {
 
 // user inputs elements
 let choice = document.getElementById('typeSection').value;
+let timer= document.getElementById('start_date').value;
 let boardtypeElem = mainForm.board_type,
     ballsizeElem = mainForm.ball_size,
     pastetypeElem= mainForm.paste_type
@@ -68,9 +69,11 @@ const getUserInputs = () => {
         reflowtimeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'reflow_time'));
         console.log(board_list);
         console.log(paste_list);
+        console.log(timer)
     
 
         return {
+        timer: timer,
         board_type: boardtypeElem.value
         , ballsize: ballsizeElem.value
         ,pastetype:pastetypeElem.value,
@@ -238,12 +241,7 @@ const displayCV = (userData) => {
     reflowDsp.innerHTML=" the reflow temp is " + userData.reflow_temp + " the reflow timw is "+ userData.reflow_time;
     projects_dsp.innerHTML = "board composition is " + objectToString(userData.board_list) + " paste composition is " + objectToString(userData.paste_list);
     
-   
-    
-    // showListData(userData.achievements, achievementsDsp);
-    // showListData(userData.skills, skillsDsp);
-    // showListData(userData.educations, educationsDsp);
-    // showListData(userData.experiences, experiencesDsp);
+
 }
 
 // generate CV
