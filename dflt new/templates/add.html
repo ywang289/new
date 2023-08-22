@@ -9,7 +9,7 @@
         <!-- custom css -->
         <link rel="stylesheet" href="assets/css/main.css">
     </head>
-    <body>
+    <body onload="toggleSections()">
         <nav class = "navbar bg-white">
             <div class="container">
                 <div class = "navbar-content">
@@ -30,15 +30,14 @@
         <div class="container">
             <div class=" form-control">
                 
-                    <div class=" form-label">
-                        <label for="typeSection" class="form-label">Select Type</label>
-                        <select id="typeSection"   class="form-control"   onchange="toggleSections()" required>
-                           
-                            <option value="bga">BGA</option>
-                            <option value="non-bga">Non-BGA</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
+                <div class=" form-label">
+                    <label for="typeSection" class="form-label">Select Type</label>
+                    <select id="typeSection"   class="form-control"   onchange="toggleSections()" required>
+                        <option value="bga" selected>BGA</option>
+                        <option value="non-bga">Non-BGA</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
                 
                 <script>
                     function toggleSections() {
@@ -53,7 +52,7 @@
                             document.getElementById('aboutSection').style.display = 'none';
                             document.getElementById('achievementsSection').style.display = 'none';
                         }
-                    }
+                                        }
                     // Call the function once to initialize the correct state
                     toggleSections();
                 </script>
@@ -139,12 +138,12 @@
                             <option value="Silicon">Silicon (Si)</option>
                         </select>
                         <input type="text" class="form-control percentage" placeholder="Enter Percentage">
-                        <button type="button" class="add-btn" onclick="addRow()">+</button>
+                        <button type="button" class="add-btn" onclick="addRow('compositionTable')">+</button>
                         
                     </div>
                     
                 </div>
-                <button type="button" class="finish-btn" onclick="showTable()">Finish</button>
+                <button type="button" class="finish-btn" onclick="showTable('compositionTable', 'displayTable', board_list);">Finish</button>
                 <table id="displayTable">
                     <!-- Table Rows go here -->
                 </table>
@@ -167,7 +166,7 @@
 
             <div class = "form-elem">
                 <label for = "" class = "form-label">Paste Composition</label>
-                <div id="compositionTable">
+                <div id="compositionTable2">
                     <div class="compositionRow">
                         <select class="form-control elementName">
                             <option disabled selected value> -- select an element -- </option>
@@ -189,12 +188,12 @@
                             <option value="Silicon">Silicon (Si)</option>
                         </select>
                         <input type="text" class="form-control percentage" placeholder="Enter Percentage">
-                        <button type="button" class="add-btn" onclick="addRow()">+</button>
+                        <button type="button" class="add-btn" onclick="addRow('compositionTable2')">+</button>
                         
                     </div>
                     
                 </div>
-                <button type="button" class="finish-btn" onclick="showTable2()">Finish</button>
+                <button type="button" class="finish-btn" onclick="showTable('compositionTable2', 'displayTable2', paste_list);">Finish</button>
                 <table id="displayTable2">
                     <!-- Table Rows go here -->
                 </table>
@@ -204,6 +203,11 @@
             <div class = "form-elem">
                 <label for = "" class = "form-label">Reflow Tempeture</label>
                 <input name = "reflow_temp" type = "text" class = "form-control email" id = "" onkeyup="generateCV()" placeholder="e.g. 200">
+                <span class="form-text"></span>
+              
+            </div>
+            <div class = "form-elem">
+                
                 <label for = "" class = "form-label">Reflow Time</label>
                 <input name = "reflow_time" type = "text" class = "form-control email" id = "" onkeyup="generateCV()" placeholder="e.g. 30">
                 <span class="form-text"></span>
@@ -218,7 +222,8 @@
                     </select>
                 </div>
                 <label for="zipResult" class="form-label">Upload ZIP File</label>
-                <input name="zip_result" type="file" class="form-control image" id="zipResult" accept=".zip" onchange="handleZipFile()">
+                <input name="zip_result" type="file" class="form-control image" id="zipResult" accept=".zip" >
+                <button id="uploadButton" type="button" class="btn btn-primary" onclick="handleZipFile()">Upload</button>
                 <div id="uploadStatus">Uploading</div>
 
                 
@@ -291,6 +296,9 @@
                         <div class = "preview-blk">
                             <div class = "preview-blk-title">
                                 <h3>about</h3>
+                            </div>
+                            <div class = "preview-item preview-item-name">
+                                <span class = "preview-item-val fw-6" id = "timeDsp"></span>
                             </div>
                            
                             <div class = "preview-item preview-item-name">

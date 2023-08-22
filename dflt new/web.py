@@ -38,7 +38,7 @@ def save_to_csv(data, path):
     # Flatten the data dictionary
     values = list(data.values())
     print(values)
-    sample_name = str(values[0]['board_type']) + str(values[0]['ballsize'])+ str(values[0]['pastetype'])+ str(values[0]['pastesize'])+ str(values[0]['reflow_temp'])
+    sample_name = str(values[0]['timer'])+str(values[0]['board_type']) + str(values[0]['ballsize'])+ str(values[0]['pastetype'])+ str(values[0]['pastesize'])+ str(values[0]['reflow_temp'])
 
     # [{'board_type': 'w', 'ballsize': 'w', 'pastetype': 'wer', 'pastesize': 'wer', 'reflow_temp': '110', 'reflow_time': '20', 
     #   'board_list': {'Boron': '12', 'Carbon': '13', 'Aluminium': '15', 'Beryllium': '56'}, 
@@ -178,21 +178,27 @@ def upload():
         return "No selected file", 400
 
     test_result_type = request.form.get("testResultType")
+    filename = request.form.get("filename")
 
     # Create directory if it doesn't exist
     directory = r'C:\Users\ywang\Desktop\DFLT_summary\{}'.format(test_result_type)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
+    mid_path = os.path.join(directory, filename)
+    
+    if not os.path.exists(mid_path):
+        os.makedirs(mid_path)
+    
+    
     # Save the uploaded zip file to the server
-    zip_path = os.path.join(directory, file.filename)
+    zip_path = os.path.join(mid_path, file.filename)
     file.save(zip_path)
 
-    # Unzip the file into the specified directory
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(directory)
+    # # Unzip the file into the specified directory
+    # with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    #     zip_ref.extractall(directory)
 
     return "File uploaded and extracted successfully"
+
+
 
 
 @app.route('/plot')

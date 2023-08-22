@@ -1,7 +1,6 @@
 // regex for validation
 const strRegex =  /^[a-zA-Z\s]*$/; // containing only letters
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 /* supports following number formats - (123) 456-7890, (123)456-7890, 123-456-7890, 123.456.7890, 1234567890, +31636363634, 075-63546725 */
 const digitRegex = /^\d+$/;
 
@@ -11,13 +10,12 @@ const validType = {
     TEXT_EMP: 'text_emp',
     EMAIL: 'email',
     DIGIT: 'digit',
-    PHONENO: 'phoneno',
     ANY: 'any',
 }
 
 // user inputs elements
 let choice = document.getElementById('typeSection').value;
-let timer= document.getElementById('start_date').value;
+let timer=   document.getElementById('start_date').textContent;
 let boardtypeElem = mainForm.board_type,
     ballsizeElem = mainForm.ball_size,
     pastetypeElem= mainForm.paste_type
@@ -67,10 +65,7 @@ const getUserInputs = () => {
         pastesizeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'paste_size'));
         reflowtempElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'reflow_temp'));
         reflowtimeElem.addEventListener('keyup', (e) => validateFormData(e.target, validType. DIGIT, 'reflow_time'));
-        console.log(board_list);
-        console.log(paste_list);
-        console.log(timer)
-    
+      
 
         return {
         timer: timer,
@@ -95,21 +90,10 @@ function validateFormData(elem, elemType, elemName){
         else removeErrMsg(elem);
     }
 
-    // checking for only text string
-    if(elemType == validType.TEXT_EMP){
-        if(!strRegex.test(elem.value)) addErrMsg(elem, elemName);
-        else removeErrMsg(elem);
-    }
+    
 
-    // checking for email
-    if(elemType == validType.EMAIL){
-        if(!emailRegex.test(elem.value) || elem.value.trim().length == 0) addErrMsg(elem, elemName);
-        else removeErrMsg(elem);
-    }
-
-    // checking for phone number
-    if(elemType == validType.PHONENO){
-        if(!phoneRegex.test(elem.value) || elem.value.trim().length == 0) addErrMsg(elem, elemName);
+    if (elemType == validType.DIGIT) {
+        if (!digitRegex.test(elem.value)) addErrMsg(elem, elemName);
         else removeErrMsg(elem);
     }
 
@@ -125,69 +109,52 @@ function addErrMsg(formElem, formElemName){
     formElem.nextElementSibling.innerHTML = `${formElemName} is invalid`;
 }
 
-function addRow() {
-    let table = document.getElementById("compositionTable");
+function addRow(tableId) {
+    let table = document.getElementById(tableId);
     let row = document.createElement("div");
     row.className = "compositionRow";
     row.innerHTML = `
     <select class="form-control elementName">
-    <option disabled selected value> -- select an element -- </option>
-    <option value="Hydrogen">Hydrogen (H)</option>
-    <option value="Helium">Helium (He)</option>
-    
-    <option value="Lithium">Lithium (Li)</option>
-    <option value="Beryllium">Beryllium (Be)</option>
-    
-    <option value="Boron">Boron (B)</option>
-    <option value="Carbon">Carbon (C)</option>
-   
-    <option value="Nitrogen">Nitrogen (N)</option>
-    <option value="Oxygen">Oxygen (O)</option>
-    
-    <option value="Fluorine">Fluorine (F)</option>
-    <option value="Neon">Neon (Ne)</option>
-    
-    <option value="Sodium">Sodium (Na)</option>
-    <option value="Magnesium">Magnesium (Mg)</option>
-    
-    <option value="Aluminium">Aluminium (Al)</option>
-    <option value="Silicon">Silicon (Si)</option>
-</select>
-<input type="text" class="form-control percentage" placeholder="Enter Percentage">
-        <button type="button" class="remove-btn" onclick="removeRow(this)">-</button>
+        <option disabled selected value> -- select an element -- </option>
+        <option value="Hydrogen">Hydrogen (H)</option>
+        <option value="Helium">Helium (He)</option>
+        <option value="Lithium">Lithium (Li)</option>
+        <option value="Beryllium">Beryllium (Be)</option>
+        <option value="Boron">Boron (B)</option>
+        <option value="Carbon">Carbon (C)</option>
+        <option value="Nitrogen">Nitrogen (N)</option>
+        <option value="Oxygen">Oxygen (O)</option>
+        <option value="Fluorine">Fluorine (F)</option>
+        <option value="Neon">Neon (Ne)</option>
+        <option value="Sodium">Sodium (Na)</option>
+        <option value="Magnesium">Magnesium (Mg)</option>
+        <option value="Aluminium">Aluminium (Al)</option>
+        <option value="Silicon">Silicon (Si)</option>
+    </select>
+    <input type="text" class="form-control percentage" placeholder="Enter Percentage">
+    <button type="button" class="remove-btn" onclick="removeRow(this)">-</button>
     `;
     table.appendChild(row);
 }
 
-function removeRow(element) {
-    element.parentNode.remove();
+
+
+function removeRow(button) {
+    let row = button.parentNode;
+    row.parentNode.removeChild(row);
 }
 
-function showTable() {
-    let compositionRows = document.getElementsByClassName('compositionRow');
-    let displayTable = document.getElementById('displayTable');
+
+function showTable(parentId, tableId, list) {
+    let parentElem = document.getElementById(parentId);
+    let compositionRows = parentElem.getElementsByClassName('compositionRow');
+    let displayTable = document.getElementById(tableId);
 
     for(let i=0; i<compositionRows.length; i++) {
         let elementName = compositionRows[i].getElementsByClassName('elementName')[0].value;
         let percentage = compositionRows[i].getElementsByClassName('percentage')[0].value;
-        board_list[elementName]=percentage;
 
-        let row = displayTable.insertRow();
-        let cell1 = row.insertCell();
-        let cell2 = row.insertCell();
-        cell1.innerHTML = elementName;
-        cell2.innerHTML = percentage;
-    }
-}
-
-function showTable2() {
-    let compositionRows = document.getElementsByClassName('compositionRow');
-    let displayTable = document.getElementById('displayTable2');
-
-    for(let i=0; i<compositionRows.length; i++) {
-        let elementName = compositionRows[i].getElementsByClassName('elementName')[0].value;
-        let percentage = compositionRows[i].getElementsByClassName('percentage')[0].value;
-        paste_list[elementName]= percentage;
+        list[elementName] = percentage;
 
         let row = displayTable.insertRow();
         let cell1 = row.insertCell();
@@ -235,13 +202,17 @@ function objectToString(obj) {
 
 
 const displayCV = (userData) => {
-   
+    timeDsp.innerHTML= "the creating day is" + userData.timer;
     ballDsp.innerHTML ="the board type is: "+ userData.board_type  + " the ballsize is " + userData.ballsize;
     pasteDsp.innerHTML ="the paste type is: "+ userData.pastetype  + " the pastesize is " + userData.pastesize;
     reflowDsp.innerHTML=" the reflow temp is " + userData.reflow_temp + " the reflow timw is "+ userData.reflow_time;
-    projects_dsp.innerHTML = "board composition is " + objectToString(userData.board_list) + " paste composition is " + objectToString(userData.paste_list);
-    
+    projects_dsp.innerHTML = `
+    <p>board composition is ${objectToString(userData.board_list)}</p>
+    <p>paste composition is ${objectToString(userData.paste_list)}</p>
+  `;
+  
 
+    // showListData(userData.experiences, experiencesDsp);
 }
 
 // generate CV
@@ -283,7 +254,7 @@ function saveCVAsImage() {
         let userData = getUserInputs();
         
         // 根据 userData 生成文件名
-        let filename = userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
+        let filename =  userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
                      + userData['pastesize'] + userData['reflow_temp'] + '.png';
 
         // 获取canvas的Base64编码
@@ -308,36 +279,50 @@ function sendImageToServer(base64Image, filename) {
 }
 
 async function handleZipFile() {
-    const zipFileInput = document.getElementById('zipResult');
-    const typeSection = document.getElementById('typeSection2');
-    const testResultType = typeSection.options[typeSection.selectedIndex].value;
+    let userData = getUserInputs();
+        
+    // 根据 userData 生成文件名
+    let filename =  userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
+                 + userData['pastesize'] + userData['reflow_temp'];
+
     const uploadStatus = document.getElementById('uploadStatus');
 
-    if (zipFileInput.files.length === 0) {
-        console.error('No files selected');
-        return;
-    }
+    if (filename) {
+        console.log("the name is ")
+        console.log(filename);
+        const zipFileInput = document.getElementById('zipResult');
+        const typeSection = document.getElementById('typeSection2');
+        const testResultType = typeSection.options[typeSection.selectedIndex].value;
 
-    const file = zipFileInput.files[0];
-    const formData = new FormData();
-    formData.append('zipfile', file, file.name)
-    formData.append('testResultType', testResultType);
-
-    uploadStatus.textContent = "Uploading...";
-
-    try {
-        const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            uploadStatus.textContent = "Success";
-        } else {
-            uploadStatus.textContent = `Failed to upload files: ${response.statusText}`;
+        if (zipFileInput.files.length === 0) {
+            console.error('No files selected');
+            return;
         }
-    } catch (error) {
-        uploadStatus.textContent = `Failed to upload files: ${error}`;
+
+        const file = zipFileInput.files[0];
+        const formData = new FormData();
+        formData.append('zipfile', file, file.name);
+        formData.append('testResultType', testResultType);
+        formData.append('filename', filename );
+
+        uploadStatus.textContent = "Uploading...";
+
+        try {
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                uploadStatus.textContent = "Success";
+            } else {
+                uploadStatus.textContent = `Failed to upload files: ${response.statusText}`;
+            }
+        } catch (error) {
+            uploadStatus.textContent = `Failed to upload files: ${error}`;
+        }
+    } else {
+        uploadStatus.textContent = "Please finish the profile first";
     }
 }
 
