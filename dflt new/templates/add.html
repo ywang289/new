@@ -215,18 +215,35 @@
             <div class="form-elem">
                 <div class="form-label">
                     <label for="typeSection" class="form-label">test_result_type</label>
-                    <select id="typeSection2" class="form-control" onchange="toggleSections()" required>
+                    <select id="typeSection2" class="form-control" onchange="test_type()" required>
+                        <option value="hirox">choose one type</option>
                         <option value="hirox">hirox</option>
                         <option value="shear_test">shear test</option>
                         <option value="drop_shock">drop shock</option>
+                        <option value="others">others</option>
                     </select>
                 </div>
-                <label for="zipResult" class="form-label">Upload ZIP File</label>
-                <input name="zip_result" type="file" class="form-control image" id="zipResult" accept=".zip" >
-                <button id="uploadButton" type="button" class="btn btn-primary" onclick="handleZipFile()">Upload</button>
-                <div id="uploadStatus">Uploading</div>
-
                 
+                <!-- Single Photo Input for Hirox -->
+                <div id="photoInput" style="display: none;">
+                    <label for="singlePhotoResult" class="form-label">Upload Single Photo</label>
+                    <input name="single_photo_result" type="file" class="form-control image" id="singlePhotoResult" accept="image/*" >
+                </div>
+                
+                <!-- Number Input for Shear Test and Drop Shock -->
+                <div id="numberInput" style="display: none;">
+                    <label for="numberResult" class="form-label">Enter Number</label>
+                    <input name="number_result" type="number" class="form-control" id="numberResult">
+                </div>
+            
+                <!-- ZIP Input for Others -->
+                <div id="zipInput" style="display: none;">
+                    <label for="zipResult" class="form-label">Upload ZIP File</label>
+                    <input name="zip_result" type="file" class="form-control" id="zipResult" accept=".zip">
+                </div>
+                
+                <button id="uploadButton" type="button" class="btn btn-primary" onclick=" handleFileUpload()">Upload</button>
+                <div id="uploadStatus">Uploading</div>
             </div>
             
 
@@ -335,7 +352,7 @@
 
         <section class = "print-btn-sc">
             <div class = "container">
-                <button type = "button" class = "print-btn btn btn-primary" onclick="printCV()">Print CV</button>
+                <button type = "button" class = "print-btn btn btn-primary" onclick="printCV()">Print Profile</button>
             </div>
         </section>
 
@@ -362,6 +379,8 @@
         <script src = "assets/js/script.js"></script>
         <!-- app js -->
         <script src="assets/js/app.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 

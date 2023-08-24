@@ -265,6 +265,27 @@ function saveCVAsImage() {
     });
 }
 
+function test_type() {
+    const selection = document.getElementById('typeSection2').value;
+    const photoInput = document.getElementById('photoInput');
+    const numberInput = document.getElementById('numberInput');
+    const zipInput = document.getElementById('zipInput');
+    
+    if (selection === 'hirox') {
+        photoInput.style.display = 'block';
+        numberInput.style.display = 'none';
+        zipInput.style.display = 'none';
+    } else if (selection === 'shear_test' || selection === 'drop_shock') {
+        photoInput.style.display = 'none';
+        numberInput.style.display = 'block';
+        zipInput.style.display = 'none';
+    } else if (selection === 'others') {
+        photoInput.style.display = 'none';
+        numberInput.style.display = 'none';
+        zipInput.style.display = 'block';
+    }
+}
+
 function sendImageToServer(base64Image, filename) {
     fetch('/save_image', {
         method: 'POST',
@@ -278,54 +299,72 @@ function sendImageToServer(base64Image, filename) {
     });
 }
 
-async function handleZipFile() {
+async function handleFileUpload() {
     let userData = getUserInputs();
         
-    // 根据 userData 生成文件名
-    let filename =  userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
+    // Generate filename based on userData 
+    let filename = userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
                  + userData['pastesize'] + userData['reflow_temp'];
 
     const uploadStatus = document.getElementById('uploadStatus');
+    const typeSection = document.getElementById('typeSection2');
+    const testResultType = typeSection.options[typeSection.selectedIndex].value;
 
-    if (filename) {
-        console.log("the name is ")
-        console.log(filename);
-        const zipFileInput = document.getElementById('zipResult');
-        const typeSection = document.getElementById('typeSection2');
-        const testResultType = typeSection.options[typeSection.selectedIndex].value;
+    if (!filename) {
+        uploadStatus.textContent = "Please finish the profile first";
+        return;
+    }
+    
+    console.log("the name is ", filename);
+    
+    const formData = new FormData();
+    formData.append('testResultType', testResultType);
+    formData.append('filename', filename);
 
-        if (zipFileInput.files.length === 0) {
-            console.error('No files selected');
+    if (testResultType === 'hirox') {
+        const photoInput = document.getElementById('singlePhotoResult');
+        if (photoInput.files.length === 0) {
+            console.error('No photo selected');
             return;
         }
+        const photoFile = photoInput.files[0];
+        formData.append('photo', photoFile, photoFile.name);
 
-        const file = zipFileInput.files[0];
-        const formData = new FormData();
-        formData.append('zipfile', file, file.name);
-        formData.append('testResultType', testResultType);
-        formData.append('filename', filename );
-
-        uploadStatus.textContent = "Uploading...";
-
-        try {
-            const response = await fetch('/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (response.ok) {
-                uploadStatus.textContent = "Success";
-            } else {
-                uploadStatus.textContent = `Failed to upload files: ${response.statusText}`;
-            }
-        } catch (error) {
-            uploadStatus.textContent = `Failed to upload files: ${error}`;
+    } else if (testResultType === 'shear_test' || testResultType === 'drop_shock') {
+        const numberInput = document.getElementById('numberResult').value;
+        if (!numberInput) {
+            console.error('No number entered');
+            return;
         }
-    } else {
-        uploadStatus.textContent = "Please finish the profile first";
+        formData.append('numberValue', numberInput);
+
+    } else if (testResultType === 'others') {
+        const zipFileInput = document.getElementById('zipResult');
+        if (zipFileInput.files.length === 0) {
+            console.error('No ZIP file selected');
+            return;
+        }
+        const zipFile = zipFileInput.files[0];
+        formData.append('zipfile', zipFile, zipFile.name);
+    }
+
+    uploadStatus.textContent = "Uploading...";
+
+    try {
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.ok) {
+            uploadStatus.textContent = "Success";
+        } else {
+            uploadStatus.textContent = `Failed to upload: ${response.statusText}`;
+        }
+    } catch (error) {
+        uploadStatus.textContent = `Failed to upload: ${error}`;
     }
 }
-
 
 
 function saveFile(file, fileName) {
@@ -347,5 +386,4 @@ function printCV() {
     
     window.print();
 }
-
 

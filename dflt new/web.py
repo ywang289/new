@@ -168,15 +168,24 @@ def search_data():
 
 
 
+from werkzeug.utils import secure_filename
+from flask import request, jsonify
+def save_to_number_csv(filename, numberValue, csv_path):
+    # 检查文件是否存在
+    file_exists = os.path.exists(csv_path)
+    
+    with open(csv_path, 'a', newline='') as csvfile:
+        fieldnames = ['filename', 'numberValue']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        # 如果文件不存在，则写入标题行
+        if not file_exists:
+            writer.writeheader()
+        
+        writer.writerow({'filename': filename, 'numberValue': numberValue})
+
 @app.route('/upload', methods=['POST'])
 def upload():
-    if 'zipfile' not in request.files:
-        return "No file part", 400
-
-    file = request.files['zipfile']
-    if file.filename == '':
-        return "No selected file", 400
-
     test_result_type = request.form.get("testResultType")
     filename = request.form.get("filename")
 
@@ -186,17 +195,52 @@ def upload():
     
     if not os.path.exists(mid_path):
         os.makedirs(mid_path)
-    
-    
-    # Save the uploaded zip file to the server
-    zip_path = os.path.join(mid_path, file.filename)
-    file.save(zip_path)
 
-    # # Unzip the file into the specified directory
-    # with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-    #     zip_ref.extractall(directory)
+    if test_result_type == 'hirox':
+        if 'photo' not in request.files:
+            return "No photo uploaded", 400
+        file = request.files['photo']
+        if file.filename == '':
+            return "No photo selected", 400
+        photo_path = os.path.join(mid_path, secure_filename(file.filename))
+        file.save(photo_path)
 
-    return "File uploaded and extracted successfully"
+    elif test_result_type in ['shear_test', 'drop_shock']:
+        numberValue = request.form.get("numberValue")
+        
+        # 创建目录（如果不存在）
+        directory = r'C:\Users\ywang\Desktop\DFLT_summary\{}'.format(test_result_type)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        # 定义CSV文件的路径
+        csv_filename = 'all_data.csv'
+        csv_path = os.path.join(directory, csv_filename)
+        
+        # 保存数据到CSV文件
+        save_to_number_csv(filename, numberValue, csv_path)
+
+        return "Data saved successfully"
+        # Save or process the number as per your needs
+        # E.g., save to a database, etc.
+
+    elif test_result_type == 'others':
+        if 'zipfile' not in request.files:
+            return "No ZIP file uploaded", 400
+        file = request.files['zipfile']
+        if file.filename == '':
+            return "No ZIP file selected", 400
+        zip_path = os.path.join(mid_path, secure_filename(file.filename))
+        file.save(zip_path)
+        # If you want to extract the ZIP, uncomment the below code
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(mid_path)
+
+    else:
+        return "Invalid test result type", 400
+
+    return jsonify(status="success", message="File uploaded successfully")
+
 
 
 
