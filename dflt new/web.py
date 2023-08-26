@@ -28,7 +28,10 @@ app = Flask(__name__, static_folder="assets", template_folder="templates")
 CORS(app)
 
 
-url=r"C:\Users\ywang\Desktop\DFLT_summary"
+
+# url=  r'C:\Users\ywang\Desktop\DFLT_summary\sample inforamtion'
+url = '/Users/wangyifan/Desktop/DFLT_summary'
+
 
     
 def save_to_csv(data, path):
@@ -142,6 +145,7 @@ def add_date():
 
         # Directory for storing files
         directory =  r'C:\Users\ywang\Desktop\DFLT_summary\sample inforamtion'
+        directory= '{}/{}'.format(url,'sample inforamtion')
 
         # 1. Save to CSV
         csv_filename = 'all_data.csv'
@@ -164,10 +168,6 @@ def search_data():
 
  
 
-
-
-
-
 from werkzeug.utils import secure_filename
 from flask import request, jsonify
 def save_to_number_csv(filename, numberValue, csv_path):
@@ -188,9 +188,14 @@ def save_to_number_csv(filename, numberValue, csv_path):
 def upload():
     test_result_type = request.form.get("testResultType")
     filename = request.form.get("filename")
+    # this is for store for searching
+    userData = json.loads(request.form.get('userData'))
+    print(userData['board_type'])
 
     # Create directory if it doesn't exist
-    directory = r'C:\Users\ywang\Desktop\DFLT_summary\{}'.format(test_result_type)
+    # 改变位置的时候这块注意
+    directory = '{}/{}'.format(url, test_result_type)
+
     mid_path = os.path.join(directory, filename)
     
     if not os.path.exists(mid_path):
@@ -203,13 +208,15 @@ def upload():
         if file.filename == '':
             return "No photo selected", 400
         photo_path = os.path.join(mid_path, secure_filename(file.filename))
+        print(photo_path)
         file.save(photo_path)
 
     elif test_result_type in ['shear_test', 'drop_shock']:
         numberValue = request.form.get("numberValue")
         
         # 创建目录（如果不存在）
-        directory = r'C:\Users\ywang\Desktop\DFLT_summary\{}'.format(test_result_type)
+        #改变时注意
+        directory =  '{}/{}'.format(url, test_result_type)
         if not os.path.exists(directory):
             os.makedirs(directory)
         
@@ -270,7 +277,7 @@ def save_image():
 
     image_data = base64.b64decode(base64_image)
 
-    directory = r'C:\Users\ywang\Desktop\DFLT_summary\sample inforamtion'
+    directory= '{}/{}'.format(url,'sample inforamtion')
     path = os.path.join(directory, filename)
     
     with open(path, 'wb') as f:
@@ -281,4 +288,4 @@ def save_image():
 
 if __name__=='__main__':
 
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8081, debug=True)

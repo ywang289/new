@@ -230,6 +230,14 @@ function previewImage(){
     }
 }
 
+function combinedFunction() {
+    saveCVAsImage().then(() => {
+        sendNameToBackend();
+    }).catch(error => {
+        console.error("Error in combinedFunction:", error);
+    });
+}
+
 
 function sendNameToBackend() {
     
@@ -247,22 +255,35 @@ function sendNameToBackend() {
       });
 }
 
+
+
+
 function saveCVAsImage() {
     let element = document.getElementById('preview-sc');
-
-    html2canvas(element).then(function(canvas) {
+    
+    // Return the promise so that you can use .then() later
+    return html2canvas(element).then(function(canvas) {
         let userData = getUserInputs();
-        
-        // 根据 userData 生成文件名
-        let filename =  userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
+        let filename = userData['board_type'] + userData['ballsize'] + userData['pastetype'] 
                      + userData['pastesize'] + userData['reflow_temp'] + '.png';
 
-        // 获取canvas的Base64编码
         let base64Image = canvas.toDataURL();
-
-        // 将图像发送到服务器
         sendImageToServer(base64Image, filename);
     });
+}
+
+
+function showsImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            document.getElementById('displayImage').src = e.target.result;
+            document.getElementById('displayImage').style.display = "block";
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 
 function test_type() {
@@ -318,6 +339,7 @@ async function handleFileUpload() {
     console.log("the name is ", filename);
     
     const formData = new FormData();
+    formData.append('userData', JSON.stringify(userData));
     formData.append('testResultType', testResultType);
     formData.append('filename', filename);
 
@@ -378,6 +400,8 @@ function saveFile(file, fileName) {
     a.click();
     window.URL.revokeObjectURL(url);
 }
+
+
 
 
 
