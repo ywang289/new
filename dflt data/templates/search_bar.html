@@ -30,23 +30,59 @@
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body>
-    <nav class = "navbar bg-white">
+    <nav class="navbar bg-white">
         <div class="container">
-            <div class = "navbar-content">
-                <div class = "brand-and-toggler">
-                    <a href = "/" class = "navbar-brand">
-                        <img src = "assets/images\upper.jpg" alt = "" class = "navbar-brand-icon">
-                        <span class = "navbar-brand-text">DFLT <span>DATA</span>
+            <div class="navbar-content">
+                <div class="brand-and-toggler">
+                    <a href="/" class="navbar-brand">
+                        <img src="assets/images/upper.jpg" alt="" class="navbar-brand-icon">
+                        DFLT <span>DATA</span>
                     </a>
-                   
                 </div>
             </div>
         </div>
     </nav>
     <h2>PLEASE SELECT THE INFORMATION</h2>
 
-   
+    <div class="container">
+        <div class="form-control">
+            <label for="typeSection" class="form-label">Select Type</label>
+            <select id="typeSection" class="form-control" onchange="displayFieldsBasedOnSelection()" required>
+                <option value="bga" selected>BGA</option>
+                <option value="non-bga">Non-BGA</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <!-- Hidden BGA fields -->
+        <div id="bgaFields" style="display:none;">
+            <input type="text" id="timer" placeholder="Timer">
+            <input type="text" id="board_type" placeholder="Board Type">
+            <input type="text" id="ball_size" placeholder="Ball Size">
+            <!-- ... other BGA-specific input fields ... -->
+        </div>
+
+        <!-- Add similar divs for non-bga and other if needed -->
+    </div>
+
+    <!-- JS Section -->
+    <script>
+        function displayFieldsBasedOnSelection() {
+            var selection = document.getElementById("typeSection").value;
+
+            // Hide all fields first
+            document.getElementById("bgaFields").style.display = 'none';
+            // If you have non-bga and other fields divs, hide them as well here
+
+            // Now, based on the selection, display the corresponding fields
+            if(selection === "bga") {
+                document.getElementById("bgaFields").style.display = 'block';
+            }
+            // Add similar conditions for non-bga and other
+        }
+
+        // Initial call to set up the correct display based on the initial dropdown selection
+        displayFieldsBasedOnSelection();
+    </script>
 </body>
 </html>
-
-

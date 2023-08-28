@@ -271,7 +271,7 @@ def add_date():
 @app.route('/search', methods=['GET'])
 def search_data():
     # return render_template("resume.html")
-    return render_template("search_data.html")
+    return render_template("search_bar.html")
 
  
 
