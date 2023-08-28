@@ -89,6 +89,42 @@
             {% endfor %}
         </tbody>
     </table>
+
+
+    <h2>NonBGAs Data</h2>
+
+    <table>
+        <thead>
+            <tr>
+                
+                <th>Time</th>
+                <th> Type</th>
+                <th>Description</th>
+                <th>Hirox Result</th>
+                <th>Drop Test Result</th>
+                <th>Shear Test Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nonbga in nonbgas %}
+            <tr>
+                
+                <td>{{ nonbga.timer }}</td>
+                <td>{{ nonbga.type }}</td>
+                <td>{{ nonbga.description}}</td>
+               
+                <td>
+                    {% if nonbga.hirox_result %}
+                        <img src="{{  nonbga.hirox_result }}" alt="Hirox Result Image"  width="60" height="80">
+                    {% endif %}
+                </td>
+                
+                <td>{{ nonbga.drop_test_result }}</td>
+                <td>{{ nonbga.shear_test_result }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
 

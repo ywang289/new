@@ -96,20 +96,21 @@ const getUserInputs = (choice) => {
   } else if (choice === "non-bga") {
     
      
-    type = document.querySelector('.achieve_title').value;
-    description = document.querySelector('.achieve_description').value;
+    type = document.getElementById('TYPE').value;
+    description = document.getElementById('DESCRIPTION').value;
 
-      return {
-        timer: timer,
-        choice: choice,
-        type:type,
-        description: description,
-        testResultType: testResultType,
-        singlePhotoResult:  base64Image || singlePhotoResult, 
-        shear_result:  shearResult ,
-        drop_result:  dropResult 
-          
-      }
+    return {
+    timer: timer,
+    choice: choice,
+    type:type,
+    description:  description,
+    testResultType: testResultType,
+    singlePhotoResult:  base64Image || singlePhotoResult, 
+    shear_result:  shearResult ,
+    drop_result:  dropResult,
+    
+        
+    }
   }
 };
 

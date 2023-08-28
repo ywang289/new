@@ -66,8 +66,8 @@ class BGAs(db.Model):
         self.drop_test_result= drop_test_result
         self.shear_test_result= shear_test_result
 
-class NON_BGAs(db.Model):
-    id = db.Column('id', db.Integer, primary_key = True)
+class NONBGAS(db.Model):
+    id = db.Column(db.String, primary_key=True)
     timer = db.Column(db.String(50))
     type = db.Column(db.String(50))
     description= db.Column(db.String(200))
@@ -75,11 +75,11 @@ class NON_BGAs(db.Model):
     shear_test_result= db.Column(db.Integer)
     drop_test_result = db.Column(db.Integer)
     
-    def __init__(self, id, timer,type, descripton,hirox_result,shear_test_result,drop_test_result):
+    def __init__(self, id, timer,type,description,hirox_result,shear_test_result,drop_test_result):
         self.id= id
         self.timer=timer
         self.type=type
-        self.descriptoin= descripton
+        self.description= description
         self.hirox_result= hirox_result
         self.drop_test_result= drop_test_result
         self.shear_test_result= shear_test_result
@@ -198,7 +198,8 @@ def try_search():
 @app.route('/show_data')
 def show_data():
     bgas = BGAs.query.all()
-    return render_template('show_data.html', bgas=bgas)
+    nonbgas =  NONBGAS.query.all()
+    return render_template('show_data.html', bgas=bgas, nonbgas= nonbgas)
 
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -207,27 +208,44 @@ def add_date():
     if request.method == 'POST':
         data = request.json['Data']
         print(data)
+        if data['choice']=='bga':
         
-        new_bga = BGAs(
-                id = data["board_type"] + data["pastetype"] + data["timer"],
+            new_bga = BGAs(
+                    id = data["board_type"] + data["pastetype"] + data["timer"],
+                    timer=data["timer"],
+                    board_type=data["board_type"],
+                    ball_size=data["ballsize"],
+                    paste_type=data["pastetype"],
+                    paste_size=data["pastesize"],
+                    reflow_temp=data["reflow_temp"],
+                    reflow_time=data["reflow_time"],
+                    board_list=json.dumps(data["board_list"]),
+                    paste_list=json.dumps(data["paste_list"]),
+                    hirox_result= data["singlePhotoResult"],
+                    drop_test_result=data["drop_result"],
+                    shear_test_result=data["shear_result"],
+        
+            )
+
+            # Add to the database session and commit
+            db.session.add(new_bga)
+            db.session.commit()
+        else:
+            print("this is before the database")
+            print(data)
+            
+            new_nonbga=NONBGAS(
+                id = data["type"]+ data["timer"],
                 timer=data["timer"],
-                board_type=data["board_type"],
-                ball_size=data["ballsize"],
-                paste_type=data["pastetype"],
-                paste_size=data["pastesize"],
-                reflow_temp=data["reflow_temp"],
-                reflow_time=data["reflow_time"],
-                board_list=json.dumps(data["board_list"]),
-                paste_list=json.dumps(data["paste_list"]),
+                type= data['type'],
+                description=data['description'],
                 hirox_result= data["singlePhotoResult"],
                 drop_test_result=data["drop_result"],
                 shear_test_result=data["shear_result"],
-    
-        )
 
-        # Add to the database session and commit
-        db.session.add(new_bga)
-        db.session.commit()
+            )
+            db.session.add(new_nonbga)
+            db.session.commit()
 
         # print("Received data:")
         # print(data)
@@ -304,17 +322,17 @@ def upload():
 
 @app.route('/save_image', methods=['POST'])
 def save_image():
-    data = request.json
-    base64_image = data['image'].split(',')[1]  
-    filename = data['filename']  # 获取文件名
+    # data = request.json
+    # base64_image = data['image'].split(',')[1]  
+    # filename = data['filename']  # 获取文件名
 
-    image_data = base64.b64decode(base64_image)
+    # image_data = base64.b64decode(base64_image)
 
-    directory= '{}/{}'.format(url,'sample inforamtion')
-    path = os.path.join(directory, filename)
+    # directory= '{}/{}'.format(url,'sample inforamtion')
+    # path = os.path.join(directory, filename)
     
-    with open(path, 'wb') as f:
-        f.write(image_data)
+    # with open(path, 'wb') as f:
+    #     f.write(image_data)
 
     return jsonify(status="success")
     
